@@ -132,22 +132,7 @@ plot_data_small_sample <- data.frame(
 
 write.csv(plot_data_small_sample, "Ridge/Output/deb_small_sample.csv")
 #%%
-# Create the plot
-ggplot(plot_data, aes(x = lambda, y = value, color = Metric, linetype = Estimator)) +
-  geom_line() +
-  scale_color_manual(values = c("MSE" = "black", "Bias2" = "red", "Variance" = "blue")) +
-  scale_linetype_manual(values = c("Normal Ridge" = "solid", "Debiased Ridge" = "dashed")) +
-  labs(
-    title = "Small Sample",
-    x = expression(lambda),
-    y = "MSE"
-  ) +
-  theme_minimal() +
-  theme(
-    legend.position = "right"
-  ) +
-  ylim(0, 6) +
-  xlim(0, 25)
+
 
 #%%   Generate larger sample comparison
 # set seed

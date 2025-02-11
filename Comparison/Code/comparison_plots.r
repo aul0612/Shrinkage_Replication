@@ -1,13 +1,3 @@
-## data generation and metrics
-#library(parallel)
-
-#files <- list("Comparison/control_k_large.r", "Comparison/true_k_large.r", "Comparison/lasso_better.r", "Comparison/ridge_better.r")
-# run each file in parallel
-#cl <- makeCluster(4)
-#parLapply(cl, files, source)
-# stop the cluster
-#stopCluster(cl)
-#print("done")
 
 ## 
 library(tidyverse)

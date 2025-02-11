@@ -10,6 +10,7 @@ library(mosaic)
 library(ggplot2)
 library(tidyr)
 library(dplyr)
+library(progress)
 
 #mu_values <- c(0, 1, 10)
 #sigma_values <- c(0.001, 1, 2, 5)
@@ -69,7 +70,10 @@ library(dplyr)
     mspe_all_lasso <- numeric(L)
     X_train <- mvrnorm(n, means_X, diag(k))
     X_test <- mvrnorm(n, means_X, diag(k))
+
+    pb <- progress_bar$new(total=B)
     for (b in 1:B){
+        pb$tick()
         # Simulate Data
         eps_train <- rnorm(n, 0, sigma)
         eps_test <- rnorm(n, 0, sigma)
