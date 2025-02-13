@@ -1,5 +1,4 @@
 rm(list = ls())
-#setwd("Replication")
 library(MASS)
 library(parallel)
 library(Matrix)
@@ -80,30 +79,60 @@ for (i in 1:L){
     mean_coefficient[i,] <- colMeans(coefficients_all[i,,])
 }
 
-
-# plot the on mean coefficients for on lambda
-matplot(log(lambda_values), mean_coefficient, type = "l",
- xlab = expression("log("~lambda~ ")"), ylab = "Ridge Coefficient", main = "Regularization paths for different variances") 
-
-vars_X 
 cols <- c("red", "green", "blue", "purple", "orange")
 upper <- 1:5
 var_df <- data.frame(Var = vars_X, str = NA, col = NA, lab = NA, variable = 1:k)
 for (i in 1:length(vars_X)){
-  for (j in upper){
-    if (vars_X[i]>j-1 && vars_X[i]<=j){
-      var_df$lab[i] <- j
-      var_df$str[i] <- paste0("σₓ² ∈ (",j-1,",", j, "]")
-      var_df$col[i] <- cols[j]
-    }
-  }
+for (j in upper){
+if (vars_X[i]>j-1 && vars_X[i]<=j){
+var_df$lab[i] <- j
+var_df$str[i] <- paste0("σₓ² ∈ (",j-1,",", j, "]")
+var_df$col[i] <- cols[j]
+ }
+ }
 }
 var_df
 
-pdf("Ridge/Output/Ridge_Variance.pdf")
+# Base R approach
 matplot(log(lambda_values), mean_coefficient, type = "l",
 col = var_df$col,
 xlab = expression("log("~lambda~ ")"), ylab = "Ridge Coefficient",
-main = "Regularization paths for different variances") 
+main = "Regularization paths for different variances")
 legend("topright", legend = unique(var_df$str), fill = unique(var_df$col))
-dev.off()
+
+
+# Efficient approach using ggplot2
+# First reshape the data for ggplot -> stack the entries for each variable on top of each other
+plot_data <- data.frame(
+lambda = rep(log(lambda_values), times = ncol(mean_coefficient)),
+coefficient = as.vector(mean_coefficient),
+variable = factor(rep(1:k, each = nrow(mean_coefficient)))
+)
+# Add variance group information
+plot_data$variance_group <- factor(
+var_df$str[match(plot_data$variable, var_df$variable)],
+levels = unique(var_df$str[order(var_df$Var)])
+)
+# Create the plot
+p <- ggplot(plot_data, aes(x = lambda, y = coefficient,
+color = variance_group,
+group = variable)) +
+geom_line() +
+scale_color_manual(values = unique(var_df$col[order(var_df$Var)])) +
+labs(
+x = expression(log(lambda)),
+y = "Ridge Coefficient",
+title = "",
+color = expression(sigma[x]^2~"range")
+ ) +
+theme_minimal() +
+theme(
+plot.title = element_text(hjust = 0.5),
+legend.position = "right",
+panel.grid.minor = element_blank()
+ )
+p
+ggsave("Ridge/Output/regressor_var.pdf",
+      width = 16, height = 7, units = "cm",
+      plot = p,
+      device = cairo_pdf)
