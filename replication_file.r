@@ -20,6 +20,17 @@ for (file in files){
 }
 rm(list = ls())
 #%%
+### Section 3
+# Replicate simulations for lasso regression
+path <- "Lasso/Code"
+files <- list.files(path = path)
+for (file in files){
+  path <- "Lasso/Code"
+  print(paste("Running", file))
+  source(file.path(getwd(), path, file))
+}
+rm(list = ls())
+#%%
 ### Section 4
 # Replicate simulations for Comparison of Ridge vs. Lasso
 path <- "Comparison/Code"
