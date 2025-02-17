@@ -1,2 +1,2 @@
 # Shrinkage_Replication
-To replicate the simulation results presented in the term paper, run the replication file or the relevant parts only.
+To replicate the simulation results presented in the term paper, run replication_file.r or the relevant parts only.
