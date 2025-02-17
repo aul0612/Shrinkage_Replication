@@ -14,30 +14,25 @@ monte_carlo_simulation <- function(n, p, n_sim, true_coefficients, lambdas, corr
     set.seed(seed)
   }
   
-  # Create covariance matrix for correlated predictors
   cov_matrix <- matrix(correlation, nrow = p, ncol = p)
   diag(cov_matrix) <- 1  # Set diagonal elements to 1 (variance of 1)
   
-  # Store results for OLS and Lasso
   results <- data.frame()
   
   simulate_once <- function(seed, lambda) {
     set.seed(seed)
     
-    # Generate synthetic data with correlated predictors
+    # Generate data
     X <- mvrnorm(n = n, mu = rep(0, p), Sigma = cov_matrix)
     epsilon <- rnorm(n, 0, 2)
     y <- X %*% true_coefficients + epsilon
     
-    # OLS regression
     ols_fit <- lm(y ~ X - 1)
     ols_coef <- coef(ols_fit)
     
-    # Lasso regression
     lasso_fit <- glmnet(X, y, alpha = 1, lambda = lambda, standardize = TRUE, intercept = FALSE)
     lasso_coef <- as.vector(coef(lasso_fit, s = lambda))[-1]  # Exclude intercept
     
-    # Calculate statistics for both methods
     list(
       OLS = list(coef = ols_coef),
       Lasso = list(coef = lasso_coef)
@@ -79,10 +74,10 @@ monte_carlo_simulation <- function(n, p, n_sim, true_coefficients, lambdas, corr
 # Parameters for the simulation
 n <- 100             # Number of observations
 p <- 15              # Number of predictors
-n_sim <- 100         # Number of Monte Carlo simulations
+n_sim <- 100       
 lambdas <- seq(0.00, 0.5, by = 0.02)  # Range of lambda values
-correlation <- 0     # Correlation coefficient for predictors
-seed <- 1234           # Seed for reproducibility
+correlation <- 0     
+seed <- 1234          
 
 # Varying sparsity levels
 sparsity_levels <- list(
@@ -91,7 +86,6 @@ sparsity_levels <- list(
   `Sparse (5 non-zero)` = c(runif(5, -5, 5), rep(0, 10))
 )
 
-# Run simulation for each sparsity level
 all_results <- data.frame()
 for (sparsity_name in names(sparsity_levels)) {
   true_coefficients <- sparsity_levels[[sparsity_name]]
@@ -100,7 +94,6 @@ for (sparsity_name in names(sparsity_levels)) {
   all_results <- rbind(all_results, results)
 }
 
-# Reshape and plot
 plot_data <- all_results %>%
   pivot_longer(cols = c(Bias, Variance, MSE), names_to = "Metric", values_to = "Value")
  

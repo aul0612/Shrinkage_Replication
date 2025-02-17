@@ -1,5 +1,5 @@
 rm(list = ls())
-# Load libraries
+
 library(ggplot2)
 
 # Define the Laplace prior (Lasso prior)
@@ -12,7 +12,6 @@ gaussian_prior <- function(beta, sigma) {
   (1 / sqrt(2 * pi * sigma^2)) * exp(-beta^2 / (2 * sigma^2))
 }
 
-# Create a sequence of beta values
 beta_values <- seq(-4, 4, length.out = 500)
 
 lambda <- 2  # Laplace parameter
@@ -29,7 +28,6 @@ data <- data.frame(
 # Only data entries for Lasso
 data_lasso <- subset(data,prior == "Laplace (Lasso)")
 
-# Plot using ggplot2
 p <- ggplot(data_lasso, aes(x = beta, y = density)) +
   geom_line(size = 1) +
   labs(
